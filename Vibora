@@ -1,10 +1,11 @@
 from turtle import *
-from random import randrange
+from random import randrange, choice
 from freegames import square, vector
 
 food = vector(0, 0)
 snake = [vector(10, 0)]
 aim = vector(0, -10)
+colors = ['blue', 'green', 'purple', 'yellow', 'orange']
 
 def change(x, y):
     "Change snake direction."
@@ -15,11 +16,24 @@ def inside(head):
     "Return True if head inside boundaries."
     return -200 < head.x < 190 and -200 < head.y < 190
 
+def move_food():
+        # Genera un nuevo vector aleatorio en una de las cuatro direcciones
+    new_food = food + vector(choice([-300, 300]), choice([-300, 300]))
+
+    # Si la nueva posición está dentro de los límites de la ventana,
+    # actualiza la posición de la comida
+    if inside(new_food):
+        food.x = new_food.x
+        food.y = new_food.y
+
+    # Llama esta función de nuevo después de un tiempo aleatorio entre 0.1 y 0.5 segundos
+    ontimer(move_food, randrange(100, 500))
+    
 def move():
     "Move snake forward one segment."
     head = snake[-1].copy()
     head.move(aim)
-
+    snake_color = choice([color for color in colors if color != 'red'])
     if not inside(head) or head in snake:
         square(head.x, head.y, 9, 'red')
         update()
@@ -37,9 +51,10 @@ def move():
     clear()
 
     for body in snake:
-        square(body.x, body.y, 9, 'black')
-
-    square(food.x, food.y, 9, 'green')
+        square(body.x, body.y, 9, snake_color)
+   
+    for body in food:
+        square(food.x, food.y, 9, 'green')
     update()
     ontimer(move, 100)
 
